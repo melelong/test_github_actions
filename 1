@@ -1,0 +1,6 @@
+          # script: |
+          #   docker login ccr.ccs.tencentyun.com -u ${{ secrets.TENCENT_CLOUD_REGISTRY_USERNAME }} -p${{ secrets.TENCENT_CLOUD_REGISTRY_PASSWORD }}
+          #   docker pull ccr.ccs.tencentyun.com/your-repo/your-image:latest
+          #   docker stop my-container || true
+          #   docker rm my-container || true
+          #   docker run -d --name my-container ccr.ccs.tencentyun.com/your-repo/your-image:latest
