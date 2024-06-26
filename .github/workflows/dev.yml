@@ -46,6 +46,8 @@ jobs:
     needs: ci
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
       # 获取包信息
       - name: Get Package Info
         id: getPackageInfo
@@ -61,6 +63,5 @@ jobs:
           password: ${{ secrets.DEV_SSH_PW }}
           port: ${{ secrets.DEV_SSH_PORT }}
           script: |
-            docker login -u  -p 
             echo "${{ secrets.DEV_DOCKER_LOGIN_PASSWORD }}" | docker login -u "${{ secrets.DEV_DOCKER_LOGIN_USERNAME }}" --password-stdin "${{ secrets.DEV_DOCKER_IMAGE_URL }}"
             docker pull ${{ secrets.DEV_DOCKER_IMAGE_URL }}/${{ secrets.DEV_DOCKER_IMAGE_URL_NAME }}/${{steps.getPackageInfo.outputs.PackageName}}:${{steps.getPackageInfo.outputs.PackageVersion}}
