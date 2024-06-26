@@ -12,6 +12,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 20.10.0
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Login to Tencent Cloud Container Registry
@@ -26,10 +30,10 @@ jobs:
           context: .
           file: Dockerfile
           push: true
-          tags: ${{ secrets.DEV_DOCKER_IMAGE_URL }}/${{ secrets.DEV_DOCKER_IMAGE_URL_NAME }}/${{ steps.packagejson.outputs.name }}:${{ steps.packagejson.outputs.version }}
+          tags: ${{ secrets.DEV_DOCKER_IMAGE_URL }}/${{ secrets.DEV_DOCKER_IMAGE_URL_NAME }}/$(node ./scripts/sh/getPackageName.cjs):$(node ./scripts/sh/getPackageVersion.cjs)
 
     outputs:
-      image_tag: ${{ secrets.DEV_DOCKER_IMAGE_URL }}/${{ secrets.DEV_DOCKER_IMAGE_URL_NAME }}/${{ steps.packagejson.outputs.name }}:${{ steps.packagejson.outputs.version }}
+      image_tag: ${{ secrets.DEV_DOCKER_IMAGE_URL }}/${{ secrets.DEV_DOCKER_IMAGE_URL_NAME }}/$(node ./scripts/sh/getPackageName.cjs):$(node ./scripts/sh/getPackageVersion.cjs)
 
   cd:
     needs: ci
@@ -44,13 +48,3 @@ jobs:
           port: ${{ secrets.DEV_SSH_PORT }}
           script: |
             docker pull ${{ needs.ci.outputs.image_tag }}
-
-  packagejson:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Read package.json
-        id: packagejson
-        run: echo "::set-output name=name::$(cat package.json | jq -r '.name')"
-        run: echo "::set-output name=version::$(cat package.json | jq -r '.version')"
