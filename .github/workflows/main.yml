@@ -6,9 +6,12 @@ on:
 
 jobs:
   build:
-     runs-on: ubuntu-latest
-     steps:
+    runs-on: ubuntu-latest
+    steps:
       - uses: actions/checkout@v4
       - name: Print Main
         run: |
           echo "Main"
+      - name: Print name
+        run: |
+          echo ${{ secrets.NAME }}
