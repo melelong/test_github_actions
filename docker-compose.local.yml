@@ -1,0 +1,68 @@
+# 本地测试用(需要有本地docker环境，win用Docker Desktop)
+version: "3"
+networks: # 定义网络
+  local_test_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.3.0/16
+
+services:
+  # local_test_service
+  # local_test_service:
+  #   # 自动重启
+  #   restart: always
+  #   container_name: local_test_service
+  #   build:
+  #     context: .
+  #     dockerfile: ./Dockerfile
+  #   depends_on:
+  #     - local_test_mysql
+  #     # - local_test_redis
+  #   ports:
+  #     - "8090:8000"
+  #   networks:
+  #     local_test_network:
+  #       ipv4_address: 192.168.3.2
+
+  # local_test_mysql
+  local_test_mysql:
+    # 自动重启
+    restart: always
+    container_name: local_test_mysql
+    image: bitnami/mysql:latest
+    # 密码认证
+    environment:
+      - MYSQL_ROOT_PASSWORD=Aa123456
+    ports:
+      - "3306:3306"
+      - "8092:33060"
+      # 这是容器文件映射，git提交要忽略
+    volumes:
+      - ./docker-volumes/mysql/data:/var/lib/mysql
+      - ./docker-volumes/mysql/config:/etc/mysql/conf.d
+      - ./docker-volumes/mysql/log:/var/log/mysql
+      - ./docker-volumes/mysql/run:/var/run/mysqld
+    networks:
+      local_test_network:
+        ipv4_address: 192.168.3.3
+
+  # local_test_redis
+  # local_test_redis:
+  #   # 自动重启
+  #   restart: always
+  #   container_name: local_test_redis
+  #   image: bitnami/redis:latest
+  #   # 密码认证
+  #   environment:
+  #     - REDIS_PASSWORD=Aa123456
+  #   ports:
+  #     - '8093:6379'
+  #   volumes:
+  #     - ./docker-volumes/redis/data:/data
+  #     - ./docker-volumes/redis/config:/etc/redis
+  #     - ./docker-volumes/redis/log:/var/log/redis
+  #     - ./docker-volumes/redis/run:/var/run/redis
+  #   networks:
+  #     local_test_network:
+  #       ipv4_address: 192.168.3.4
