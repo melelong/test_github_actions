@@ -1,4 +1,4 @@
-name: Main
+name: ShowInfo
 
 on:
   push:
@@ -13,8 +13,11 @@ jobs:
       - name: Print Main
         run: |
           echo "Main"
+      - name: a
+        run: |
+          chmod +x test.sh
+      - name: Test
+        run: ./test.sh
       - name: Print name
         run: |
-          env
-          docker -v
           echo ${{ secrets.NAME }}
