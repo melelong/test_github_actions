@@ -19,14 +19,14 @@ jobs:
         uses: docker/setup-buildx-action@v1
       # 获取包名
       - name: Get Package Name
-        id: getPackageName
+        id: getPackageInfo
         run: |
-          echo $GITHUB_REPOSITORY
-      # 获取版本
-      - name: Get Package Version
-        id: getPackageVersion
-        run: |
-          echo $(node ./scripts/sh/getPackageVersion.cjs)
+          echo "::set-output name=PackageName::$(node ./scripts/sh/getPackageName.cjs)"
+          echo "::set-output name=PackageVersion::$(node ./scripts/sh/getPackageVersion.cjs)"
+      # # 获取版本
+      # - name: Get Package Version
+      #   id: getPackageVersion
+      #   run: |
       # 登录docker镜像仓库
       - name: Login to Docker Image Warehouse
         uses: docker/login-action@v1
@@ -41,10 +41,10 @@ jobs:
           context: .
           file: Dockerfile
           push: true
-          tags: ${{ secrets.DEV_DOCKER_IMAGE_URL }}/${{ secrets.DEV_DOCKER_IMAGE_URL_NAME }}/$GITHUB_REPOSITORY:${{steps.getPackageVersion.outputs}}
+          tags: ${{ secrets.DEV_DOCKER_IMAGE_URL }}/${{ secrets.DEV_DOCKER_IMAGE_URL_NAME }}/${{steps.getPackageInfo.outputs.PackageName}}:${{steps.getPackageInfo.outputs.PackageVersion}}
 
     outputs:
-      image_tag: ${{ secrets.DEV_DOCKER_IMAGE_URL }}/${{ secrets.DEV_DOCKER_IMAGE_URL_NAME }}/$GITHUB_REPOSITORY:${{steps.getPackageVersion.outputs}}
+      image_tag: ${{ secrets.DEV_DOCKER_IMAGE_URL }}/${{ secrets.DEV_DOCKER_IMAGE_URL_NAME }}/${{steps.getPackageInfo.outputs.PackageName}}:${{steps.getPackageInfo.outputs.PackageVersion}}
   cd:
     needs: ci
     runs-on: ubuntu-latest
