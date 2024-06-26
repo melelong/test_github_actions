@@ -1,3 +1,3 @@
 #!/bin/bash
 
-echo ${{ secrets.NAME }}
+echo ${INFO_NAME}
