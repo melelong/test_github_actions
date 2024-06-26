@@ -30,10 +30,10 @@ jobs:
           context: .
           file: Dockerfile
           push: true
-          tags: ${{ secrets.DEV_DOCKER_IMAGE_URL }}/${{ secrets.DEV_DOCKER_IMAGE_URL_NAME }}/$(node ./getPackageName.cjs):$(node ./getPackageVersion.cjs)
+          tags: ${{ secrets.DEV_DOCKER_IMAGE_URL }}/${{ secrets.DEV_DOCKER_IMAGE_URL_NAME }}/$(node ./scripts/sh/getPackageName.cjs):$(node ./scripts/sh/getPackageVersion.cjs)
 
     outputs:
-      image_tag: ${{ secrets.DEV_DOCKER_IMAGE_URL }}/${{ secrets.DEV_DOCKER_IMAGE_URL_NAME }}/$(node ./getPackageName.cjs):$(node ./getPackageVersion.cjs)
+      image_tag: ${{ secrets.DEV_DOCKER_IMAGE_URL }}/${{ secrets.DEV_DOCKER_IMAGE_URL_NAME }}/$(node ./scripts/sh/getPackageName.cjs):$(node ./scripts/sh/getPackageVersion.cjs)
 
   cd:
     needs: ci
