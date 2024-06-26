@@ -17,8 +17,8 @@ jobs:
         uses: actions/checkout@v2
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
-      # 获取包名
-      - name: Get Package Name
+      # 获取包信息
+      - name: Get Package Info
         id: getPackageInfo
         run: |
           echo "::set-output name=PackageName::$(node ./scripts/sh/getPackageName.cjs)"
@@ -27,10 +27,6 @@ jobs:
         id: downLoadDockerImage
         run: |
           docker pull node:iron-alpine3.20
-      # # 获取版本
-      # - name: Get Package Version
-      #   id: getPackageVersion
-      #   run: |
       # 登录docker镜像仓库
       - name: Login to Docker Image Warehouse
         uses: docker/login-action@v1
@@ -46,13 +42,17 @@ jobs:
           file: Dockerfile
           push: true
           tags: ${{ secrets.DEV_DOCKER_IMAGE_URL }}/${{ secrets.DEV_DOCKER_IMAGE_URL_NAME }}/${{steps.getPackageInfo.outputs.PackageName}}:${{steps.getPackageInfo.outputs.PackageVersion}}
-
-    outputs:
-      image_tag: ${{ secrets.DEV_DOCKER_IMAGE_URL }}/${{ secrets.DEV_DOCKER_IMAGE_URL_NAME }}/${{steps.getPackageInfo.outputs.PackageName}}:${{steps.getPackageInfo.outputs.PackageVersion}}
   cd:
     needs: ci
     runs-on: ubuntu-latest
     steps:
+      # 获取包信息
+      - name: Get Package Info
+        id: getPackageInfo
+        run: |
+          echo "::set-output name=PackageName::$(node ./scripts/sh/getPackageName.cjs)"
+          echo "::set-output name=PackageVersion::$(node ./scripts/sh/getPackageVersion.cjs)"
+      # 登录docker镜像仓库
       - name: SSH to Cloud Server
         uses: appleboy/ssh-action@v0.1.4
         with:
@@ -61,4 +61,6 @@ jobs:
           password: ${{ secrets.DEV_SSH_PW }}
           port: ${{ secrets.DEV_SSH_PORT }}
           script: |
-            docker pull ${{ needs.ci.outputs.image_tag }}
+            docker login -u  -p 
+            echo "${{ secrets.DEV_DOCKER_LOGIN_PASSWORD }}" | docker login -u "${{ secrets.DEV_DOCKER_LOGIN_USERNAME }}" --password-stdin "${{ secrets.DEV_DOCKER_IMAGE_URL }}"
+            docker pull ${{ secrets.DEV_DOCKER_IMAGE_URL }}/${{ secrets.DEV_DOCKER_IMAGE_URL_NAME }}/${{steps.getPackageInfo.outputs.PackageName}}:${{steps.getPackageInfo.outputs.PackageVersion}}
