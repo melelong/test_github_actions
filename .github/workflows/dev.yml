@@ -21,8 +21,8 @@ jobs:
       - name: Get Package Name
         id: getPackageInfo
         run: |
-          echo "{PackageName}={$(node ./scripts/sh/getPackageName.cjs)}" >> $GITHUB_OUTPUT
-          echo "{PackageVersion}={$(node ./scripts/sh/getPackageVersion.cjs)}" >> $GITHUB_OUTPUT
+          echo "::set-output name=PackageName::$(node ./scripts/sh/getPackageName.cjs)"
+          echo "::set-output name=PackageVersion::$(node ./scripts/sh/getPackageVersion.cjs)"
       - name: DownLoad Docker Image
         id: downLoadDockerImage
         run: |
