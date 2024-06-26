@@ -1,0 +1,27 @@
+name: dev
+
+on:
+  push:
+    branches: ['dev']
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Print Main
+        run: |
+          echo "Main"
+      - name: Set EnvVar
+        run: |
+          DEV_DOCKER_IMAGE_URL=${{ secrets.DEV_DOCKER_IMAGE_URL }}
+          DEV_DOCKER_IMAGE_URL_NAME=${{ secrets.DEV_DOCKER_IMAGE_URL_NAME }}
+          DEV_DOCKER_LOGIN_PASSWORD=${{ secrets.DEV_DOCKER_LOGIN_PASSWORD }}
+          DEV_DOCKER_LOGIN_USERNAME=${{ secrets.DEV_DOCKER_LOGIN_USERNAME }}
+          ENV_NAME=dev
+      - name: Set shell script permissions
+        run: |
+          chmod +x scripts/sh/*.sh
+      - name: Run Build script
+        run: ./scripts/sh/build.sh
