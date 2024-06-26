@@ -9,32 +9,42 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20.10.0]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Set up Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: 20.10.0
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
-      - name: Login to Tencent Cloud Container Registry
+      # 获取包名
+      - name: Get Package Name
+        id: getPackageName
+        run: |
+          echo $(node ./scripts/sh/getPackageName.cjs)
+      # 获取版本
+      - name: Get Package Version
+        id: getPackageVersion
+        run: |
+          echo $(node ./scripts/sh/getPackageVersion.cjs)
+      # 登录docker镜像仓库
+      - name: Login to Docker Image Warehouse
         uses: docker/login-action@v1
         with:
           registry: ${{ secrets.DEV_DOCKER_IMAGE_URL }}
           username: ${{ secrets.DEV_DOCKER_LOGIN_USERNAME }}
           password: ${{ secrets.DEV_DOCKER_LOGIN_PASSWORD }}
+      # 打包镜像
       - name: Build Docker Image
         uses: docker/build-push-action@v2
         with:
           context: .
           file: Dockerfile
           push: true
-          tags: ${{ secrets.DEV_DOCKER_IMAGE_URL }}/${{ secrets.DEV_DOCKER_IMAGE_URL_NAME }}/$(node ./scripts/sh/getPackageName.cjs):$(node ./scripts/sh/getPackageVersion.cjs)
+          tags: ${{ secrets.DEV_DOCKER_IMAGE_URL }}/${{ secrets.DEV_DOCKER_IMAGE_URL_NAME }}/${{steps.getPackageName.outputs}}:${{steps.getPackageVersion.outputs}}
 
     outputs:
-      image_tag: ${{ secrets.DEV_DOCKER_IMAGE_URL }}/${{ secrets.DEV_DOCKER_IMAGE_URL_NAME }}/$(node ./scripts/sh/getPackageName.cjs):$(node ./scripts/sh/getPackageVersion.cjs)
-
+      image_tag: ${{ secrets.DEV_DOCKER_IMAGE_URL }}/${{ secrets.DEV_DOCKER_IMAGE_URL_NAME }}/${{steps.getPackageName.outputs}}:${{steps.getPackageVersion.outputs}}
   cd:
     needs: ci
     runs-on: ubuntu-latest
