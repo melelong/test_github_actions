@@ -13,11 +13,11 @@ jobs:
       - name: Print Main
         run: |
           echo "Main"
+      - name: Set INFO_NAME
+        run: |
+          INFO_NAME=${{ secrets.NAME }}
       - name: a
         run: |
           chmod +x test.sh
       - name: Test
         run: ./test.sh
-      - name: Print name
-        run: |
-          echo ${{ secrets.NAME }}
