@@ -1,0 +1,20 @@
+name: Main
+
+on:
+  push:
+    branches: ['main', 'test', 'dev']
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Print Main
+        run: |
+          echo "Main"
+      - name: Print name
+        run: |
+          env
+          docker -v
+          echo ${{ secrets.NAME }}
