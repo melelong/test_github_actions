@@ -21,7 +21,7 @@ jobs:
       - name: Get Package Name
         id: getPackageName
         run: |
-          echo $(node ./scripts/sh/getPackageName.cjs)
+          echo $GITHUB_REPOSITORY
       # 获取版本
       - name: Get Package Version
         id: getPackageVersion
@@ -41,10 +41,10 @@ jobs:
           context: .
           file: Dockerfile
           push: true
-          tags: ${{ secrets.DEV_DOCKER_IMAGE_URL }}/${{ secrets.DEV_DOCKER_IMAGE_URL_NAME }}/${{steps.getPackageName.outputs}}:${{steps.getPackageVersion.outputs}}
+          tags: ${{ secrets.DEV_DOCKER_IMAGE_URL }}/${{ secrets.DEV_DOCKER_IMAGE_URL_NAME }}/$GITHUB_REPOSITORY:${{steps.getPackageVersion.outputs}}
 
     outputs:
-      image_tag: ${{ secrets.DEV_DOCKER_IMAGE_URL }}/${{ secrets.DEV_DOCKER_IMAGE_URL_NAME }}/${{steps.getPackageName.outputs}}:${{steps.getPackageVersion.outputs}}
+      image_tag: ${{ secrets.DEV_DOCKER_IMAGE_URL }}/${{ secrets.DEV_DOCKER_IMAGE_URL_NAME }}/$GITHUB_REPOSITORY:${{steps.getPackageVersion.outputs}}
   cd:
     needs: ci
     runs-on: ubuntu-latest
