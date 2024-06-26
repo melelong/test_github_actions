@@ -14,4 +14,4 @@ jobs:
           echo "Main"
       - name: Print name
         run: |
-          echo ${{ secrets.SuperSecret }}
+          echo ${{ secrets.NAME }}
