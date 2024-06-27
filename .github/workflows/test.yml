@@ -1,0 +1,37 @@
+# .github/workflows/docker-deploy.yml
+name: test
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20.10.0]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      # 注入环境变量
+      - name: Inject Env Var
+        id: injectEnvVar
+        run: |
+          echo "PJ_NAME=$(node ./scripts/sh/getPackageName.cjs)" >> "$GITHUB_ENV"
+          echo "PJ_VERSION=$(node ./scripts/sh/getPackageVersion.cjs)" >> "$GITHUB_ENV"
+          echo "DEV_DOCKER_LOGIN_USERNAME=${{secrets.DEV_DOCKER_LOGIN_USERNAME}}" >> "$GITHUB_ENV"
+          echo "DEV_DOCKER_LOGIN_PASSWORD=${{secrets.DEV_DOCKER_LOGIN_PASSWORD}}" >> "$GITHUB_ENV"
+          echo "DEV_DOCKER_IMAGE_URL=${{secrets.DEV_DOCKER_IMAGE_URL}}" >> "$GITHUB_ENV"
+      # 输出环境变量
+      - name: Echo Env Var
+        id: echoEnvVar
+        run: |
+          echo "${PJ_NAME}"
+          echo "${PJ_VERSION}"
+          echo "${DEV_DOCKER_LOGIN_USERNAME}"
+          echo "${DEV_DOCKER_LOGIN_PASSWORD}"
+          echo "${DEV_DOCKER_IMAGE_URL}"
